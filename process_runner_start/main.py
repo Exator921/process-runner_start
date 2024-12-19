@@ -12,6 +12,11 @@ def detect_project_type():
         'go': ['go.mod'],
         'elixir': ['mix.exs'],
         'python': ['requirements.txt'],
+        'rust': ['cargo.toml'],
+        'c': ['*.c'],
+        'c++': ['*.cpp'],
+        'powershell': ['*ps1'],
+        'csharp': ['*.csproj', '*.sln', '*.cs'],
     }
     for project_type, files in patterns.items():
         for file in files:
@@ -21,6 +26,17 @@ def detect_project_type():
             elif os.path.exists(file):
                 return project_type
     return None
+
+def print_dotnet_sdk_error():
+    """Prints an error message if the .NET SDK is not installed."""
+    print("\nError: The .NET SDK is not installed or not available in your system's PATH.")
+    print("To run C# projects, you need to install the .NET SDK.")
+    print("\nFollow these steps to install it:")
+    print("1. Visit the .NET download page: https://dotnet.microsoft.com/download")
+    print("2. Download the latest version of the .NET SDK for your operating system.")
+    print("3. Install the SDK by following the on-screen instructions.")
+    print("4. After installation, ensure that the 'dotnet' command is accessible from your terminal.")
+    print("\nIf the issue persists, restart your terminal or verify your PATH settings.")
 
 
 def start_project(project_type):
@@ -32,6 +48,21 @@ def start_project(project_type):
         'go': ['go', 'run', '.'],
         'elixir': ['mix', 'run'],
         'python': ['python', 'main.py'],
+        'rust': ['cargo', 'run'],
+        'c': [
+            ['gcc', '-o', 'output', 'main.c'],
+            ['output.exe'] if os.name == 'nt' else ['./output'],
+        ],
+        'c++': [
+            ['g++', '-o', 'output', 'main.cpp'],
+            ['output.exe'] if os.name == 'nt' else ['./output'],
+        ],
+        'powershell': : ['powershell', '-ExecutionPolicy', 'Bypass', '-File', 'script.ps1'],
+        'csharp': [
+            ['dotnet', 'build'],
+            ['dotnet', 'run'],
+            ['dotnet', 'script', 'main.cs']
+        ],
     }
     command = commands.get(project_type)
     if not command:
@@ -42,7 +73,11 @@ def start_project(project_type):
         print(f"Running {project_type} project...")
         subprocess.run(command, check=True)
     except FileNotFoundError as e:
-        print(f"Error: Required tool not found for {project_type}. Make sure it's installed and in your PATH.")
+            if project_type == 'csharp':
+                print_dotnet_sdk_error()
+            else:
+                print(f"Error: Required tool not found. Ensure it's installed and in your PATH.")
+            return
     except subprocess.CalledProcessError as e:
         print(f"Failed to start {project_type} project: {e}")
     except Exception as e:
