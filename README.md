@@ -6,10 +6,11 @@ Process-runner_start (better known as Process) is a command-line tool that detec
 
 ### As a Python Package
 
-3. Install the package:
-   ```sh
-   pip install process-runner_start
-   ```
+Install the package:
+
+```sh
+pip install process-runner_start
+```
 
 ## Usage
 
