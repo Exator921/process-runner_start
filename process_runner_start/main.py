@@ -15,8 +15,13 @@ def detect_project_type():
         'rust': ['cargo.toml'],
         'c': ['*.c'],
         'c++': ['*.cpp'],
-        'powershell': ['*ps1'],
+        'powershell': ['*.ps1'],
         'csharp': ['*.csproj', '*.sln', '*.cs'],
+        'php': ['composer.json', '*.php'],
+        'SQL': ['*.sql'],
+        'swift': ['Package.swift'],
+        'TS': ['*.ts'],
+        'Perl': ['*.pl'],
     }
     for project_type, files in patterns.items():
         for file in files:
@@ -57,12 +62,18 @@ def start_project(project_type):
             ['g++', '-o', 'output', 'main.cpp'],
             ['output.exe'] if os.name == 'nt' else ['./output'],
         ],
-        'powershell': : ['powershell', '-ExecutionPolicy', 'Bypass', '-File', 'script.ps1'],
+        'powershell': ['powershell', '-ExecutionPolicy', 'Bypass', '-File', 'script.ps1'],
         'csharp': [
             ['dotnet', 'build'],
             ['dotnet', 'run'],
             ['dotnet', 'script', 'main.cs']
         ],
+        'php': ['php', 'main.php'],
+        'SQL': ['sqlcmd', '-S', 'localhost', '-d', 'database_name', '-U', 'username', '-P', 'password', '-i', 'script.sql'],
+        'swift': ['swift', 'run'],
+        'TS': ['npm', 'run', 'start'],
+        'Perl': ['perl', 'main.pl'],
+
     }
     command = commands.get(project_type)
     if not command:
