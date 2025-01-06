@@ -1,9 +1,11 @@
 import sys
 import os
 import subprocess
+from mimetypes import guess_type as guess_lang
 
 def detect_project_type():
     """Detects the project type based on common files."""
+
     patterns = {
         'node': ['package.json'],
         'java': ['pom.xml', '*.java'],
@@ -24,6 +26,37 @@ def detect_project_type():
         'R': ['*.R'],
         'VisualBasic': ['main.vb'],
     }
+
+    # start by trying to use mimetypes on files in the CWD
+    cwd = os.getcwd()
+    for f in os.listdir(cwd):
+        # join the path for convenience
+        af = os.path.join(cwd,f)
+        if os.path.isfile(af):
+            # this is an odd way to handle this, but check keys in patterns
+            # guess_lang returns a tuple, 0 is type, 1 is encoding
+            langguess = guess_lang(af)[0]
+            if langguess is not None:
+                lang = langguess.lower()
+                if lang in patterns.keys():
+                    return lang
+    
+    # if that fails, then hope that there is a src dir and look there
+    srccwd = os.path.join(cwd, "src")
+    if os.path.isdir(srccwd):
+        for f in os.listdir(srccwd):
+            af = os.path.join(srccwd,f)
+            if os.path.isfile(af):
+                # same as above
+                langguess = guess_lang(af)[0]
+                if langguess is not None:
+                    lang = langguess.lower()
+                    if lang in patterns.keys():
+                        return lang
+
+
+    print("resorted to the manual checks")
+
     for project_type, files in patterns.items():
         for file in files:
             if '*' in file:  # Handle wildcard patterns
